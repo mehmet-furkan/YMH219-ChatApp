@@ -118,6 +118,9 @@ public partial class AnaForm : Form
     private void MesajEkle(EkranSatiri satir)
     {
         lstMesajlar.Items.Add(satir);
+        // Satırları kendimiz çizdiğimiz için yatay kaydırma genişliğini de kendimiz veriyoruz.
+        int genislik = TextRenderer.MeasureText(satir.Metin, lstMesajlar.Font).Width + 10;
+        lstMesajlar.HorizontalExtent = Math.Max(lstMesajlar.HorizontalExtent, genislik);
         lstMesajlar.TopIndex = lstMesajlar.Items.Count - 1;
     }
 
