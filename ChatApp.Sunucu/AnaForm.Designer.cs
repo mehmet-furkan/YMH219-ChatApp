@@ -25,6 +25,7 @@ partial class AnaForm
         chkYerelAg = new CheckBox();
         grpIstemciler = new GroupBox();
         lvIstemciler = new ListView();
+        btnIstemciyiAt = new Button();
         colKullanici = new ColumnHeader();
         colAdres = new ColumnHeader();
         colZaman = new ColumnHeader();
@@ -106,10 +107,11 @@ partial class AnaForm
         // grpIstemciler
         //
         grpIstemciler.Controls.Add(lvIstemciler);
+        grpIstemciler.Controls.Add(btnIstemciyiAt);
         grpIstemciler.Dock = DockStyle.Top;
         grpIstemciler.Name = "grpIstemciler";
         grpIstemciler.Padding = new Padding(8);
-        grpIstemciler.Size = new Size(760, 190);
+        grpIstemciler.Size = new Size(760, 220);
         grpIstemciler.TabIndex = 1;
         grpIstemciler.TabStop = false;
         grpIstemciler.Text = "Bağlı istemciler";
@@ -124,6 +126,19 @@ partial class AnaForm
         lvIstemciler.TabIndex = 0;
         lvIstemciler.UseCompatibleStateImageBehavior = false;
         lvIstemciler.View = View.Details;
+        lvIstemciler.MultiSelect = false;
+        lvIstemciler.SelectedIndexChanged += lvIstemciler_SelectedIndexChanged;
+        //
+        // btnIstemciyiAt
+        //
+        btnIstemciyiAt.Dock = DockStyle.Bottom;
+        btnIstemciyiAt.Enabled = false;
+        btnIstemciyiAt.Name = "btnIstemciyiAt";
+        btnIstemciyiAt.Size = new Size(744, 28);
+        btnIstemciyiAt.TabIndex = 1;
+        btnIstemciyiAt.Text = "Seçili istemcinin bağlantısını kes";
+        btnIstemciyiAt.UseVisualStyleBackColor = true;
+        btnIstemciyiAt.Click += btnIstemciyiAt_Click;
         //
         // colKullanici
         //
@@ -218,6 +233,7 @@ partial class AnaForm
     private CheckBox chkYerelAg;
     private GroupBox grpIstemciler;
     private ListView lvIstemciler;
+    private Button btnIstemciyiAt;
     private ColumnHeader colKullanici;
     private ColumnHeader colAdres;
     private ColumnHeader colZaman;

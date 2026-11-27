@@ -78,6 +78,25 @@ public class SohbetSunucusu
         GunlugeYaz("Sunucu durduruldu.");
     }
 
+    /// <summary>
+    /// Bir istemcinin bağlantısını sunucu tarafından keser. Önce istemciye bilgi mesajı gönderilir,
+    /// sonra bağlantı kapatılır; istemcinin okuma döngüsü bitince normal "ayrıldı" akışı çalışır.
+    /// </summary>
+    public async Task<bool> IstemciyiAtAsync(string kullaniciAdi)
+    {
+        BagliIstemci? istemci;
+        lock (_kilit)
+            _istemciler.TryGetValue(kullaniciAdi, out istemci);
+
+        if (istemci is null)
+            return false;
+
+        await GuvenliGonderAsync(istemci, Mesaj.Sistem("Sunucu yöneticisi bağlantınızı kesti."));
+        GunlugeYaz($"{istemci.KullaniciAdi} sunucu tarafından atıldı.");
+        istemci.Baglanti.Dispose();
+        return true;
+    }
+
     // ---------- Bağlantı kabulü ----------
 
     private async Task BaglantilariKabulEtAsync(TcpListener dinleyici, CancellationToken iptal)

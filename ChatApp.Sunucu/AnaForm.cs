@@ -54,6 +54,18 @@ public partial class AnaForm : Form
         DurumuGuncelle();
     }
 
+    private async void btnIstemciyiAt_Click(object? sender, EventArgs e)
+    {
+        if (lvIstemciler.SelectedItems.Count == 0 || lvIstemciler.SelectedItems[0].Tag is not BagliIstemci istemci)
+            return;
+
+        btnIstemciyiAt.Enabled = false;
+        await _sunucu.IstemciyiAtAsync(istemci.KullaniciAdi); // liste IstemciAyrildi olayında güncellenir
+    }
+
+    private void lvIstemciler_SelectedIndexChanged(object? sender, EventArgs e) =>
+        btnIstemciyiAt.Enabled = lvIstemciler.SelectedItems.Count > 0;
+
     private void AnaForm_FormClosing(object? sender, FormClosingEventArgs e) => _sunucu.Durdur();
 
     // ---------- Ekran güncelleme ----------
