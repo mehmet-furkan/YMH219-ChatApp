@@ -196,7 +196,31 @@ public class SohbetSunucusu
                 GunlugeYaz(mesaj.ToString());
                 await YayinlaAsync(mesaj);
                 break;
+
+            case MesajTuru.Ozel:
+                await OzelMesajIletAsync(gonderen, gelen);
+                break;
         }
+    }
+
+    /// <summary>/w ile gönderilen mesajı sadece alıcıya iletir, gönderene de bir kopyasını yollar.</summary>
+    private async Task OzelMesajIletAsync(BagliIstemci gonderen, Mesaj gelen)
+    {
+        BagliIstemci? alici;
+        lock (_kilit)
+            _istemciler.TryGetValue(gelen.Alici?.Trim() ?? "", out alici);
+
+        if (alici is null)
+        {
+            await GuvenliGonderAsync(gonderen, Mesaj.Sistem($"\"{gelen.Alici}\" adlı kullanıcı çevrimiçi değil."));
+            return;
+        }
+
+        var mesaj = Mesaj.Ozel(gonderen.KullaniciAdi, alici.KullaniciAdi, gelen.Metin.Trim());
+        GunlugeYaz(mesaj.ToString());
+        await GuvenliGonderAsync(alici, mesaj);
+        if (alici != gonderen)
+            await GuvenliGonderAsync(gonderen, mesaj);
     }
 
     /// <summary>Mesajı bağlı tüm istemcilere gönderir. Gönderilemeyen istemci kendi döngüsünde temizlenir.</summary>

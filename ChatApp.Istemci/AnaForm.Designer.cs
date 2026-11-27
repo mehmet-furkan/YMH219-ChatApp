@@ -143,6 +143,7 @@ partial class AnaForm
         lstKullanicilar.IntegralHeight = false;
         lstKullanicilar.Name = "lstKullanicilar";
         lstKullanicilar.TabIndex = 0;
+        lstKullanicilar.DoubleClick += lstKullanicilar_DoubleClick;
         //
         // grpMesajlar
         //
@@ -178,7 +179,7 @@ partial class AnaForm
         txtMesaj.Enabled = false;
         txtMesaj.MaxLength = 500;
         txtMesaj.Name = "txtMesaj";
-        txtMesaj.PlaceholderText = "Mesajınızı yazın ve Enter'a basın";
+        txtMesaj.PlaceholderText = "Mesajınızı yazın, Enter'a basın (özel mesaj: /w kullanici mesaj)";
         txtMesaj.TabIndex = 0;
         //
         // btnGonder

@@ -66,11 +66,27 @@ public partial class AnaForm : Form
             await _istemci.GonderAsync(metin);
             txtMesaj.Clear();
         }
+        catch (FormatException ex)
+        {
+            DurumYaz(ex.Message, hata: true); // ör. "/w" yanlış yazıldı: metin silinmez, düzeltilebilir
+        }
         catch (BaglantiHatasiException ex)
         {
             DurumYaz(ex.Message, hata: true);
         }
         txtMesaj.Focus();
+    }
+
+    /// <summary>Çevrimiçi listesinde bir kullanıcıya çift tıklayınca ona özel mesaj komutu hazırlanır.</summary>
+    private void lstKullanicilar_DoubleClick(object? sender, EventArgs e)
+    {
+        if (lstKullanicilar.SelectedItem is not string secili || !_istemci.Bagli)
+            return;
+
+        string ad = secili.Replace(" (sen)", "");
+        txtMesaj.Text = $"/w {ad} ";
+        txtMesaj.Focus();
+        txtMesaj.SelectionStart = txtMesaj.TextLength;
     }
 
     private async void AnaForm_FormClosing(object? sender, FormClosingEventArgs e)

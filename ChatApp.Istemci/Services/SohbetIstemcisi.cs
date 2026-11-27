@@ -88,7 +88,10 @@ public class SohbetIstemcisi
         _ = DinleAsync(baglanti, _iptal.Token);
     }
 
-    /// <summary>Yazılan metni sohbet odasına gönderir.</summary>
+    /// <summary>
+    /// Yazılan metni gönderir. "/w kullanici mesaj" biçimindeki metin sadece o kullanıcıya özel mesaj olur.
+    /// Komut eksik yazılmışsa FormatException fırlatır.
+    /// </summary>
     public async Task GonderAsync(string metin)
     {
         if (_baglanti is null)
@@ -98,14 +101,29 @@ public class SohbetIstemcisi
         if (metin.Length == 0)
             return;
 
+        var mesaj = MesajOlustur(metin);
         try
         {
-            await _baglanti.GonderAsync(Mesaj.Sohbet(KullaniciAdi, metin));
+            await _baglanti.GonderAsync(mesaj);
         }
         catch (Exception ex) when (ex is IOException or ObjectDisposedException or SocketException)
         {
             throw new BaglantiHatasiException("Mesaj gönderilemedi, sunucu bağlantısı kopmuş olabilir.", ex);
         }
+    }
+
+    /// <summary>Metni sohbet ya da özel mesaja çevirir.</summary>
+    private Mesaj MesajOlustur(string metin)
+    {
+        if (!metin.StartsWith("/w ", StringComparison.OrdinalIgnoreCase) && !metin.Equals("/w", StringComparison.OrdinalIgnoreCase))
+            return Mesaj.Sohbet(KullaniciAdi, metin);
+
+        // "/w ali selam nasılsın" → ["/w", "ali", "selam nasılsın"]
+        var parcalar = metin.Split(' ', 3, StringSplitOptions.RemoveEmptyEntries);
+        if (parcalar.Length < 3)
+            throw new FormatException("Özel mesaj kullanımı: /w kullanici_adi mesaj");
+
+        return Mesaj.Ozel(KullaniciAdi, parcalar[1], parcalar[2]);
     }
 
     /// <summary>Sunucuya çıkış bildirir ve bağlantıyı kapatır. BaglantiKesildi olayı dinleme döngüsünden gelir.</summary>
