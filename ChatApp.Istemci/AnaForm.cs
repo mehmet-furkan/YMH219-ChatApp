@@ -1,5 +1,5 @@
+using ChatApp.Istemci.Models;
 using ChatApp.Istemci.Services;
-using ChatApp.Ortak.Models;
 
 namespace ChatApp.Istemci;
 
@@ -15,7 +15,7 @@ public partial class AnaForm : Form
     {
         InitializeComponent();
 
-        _istemci.MesajAlindi += (_, mesaj) => ArayuzdeCalistir(() => MesajEkle(mesaj.ToString()));
+        _istemci.MesajAlindi += (_, mesaj) => ArayuzdeCalistir(() => MesajEkle(EkranSatiri.MesajdanOlustur(mesaj, _istemci.KullaniciAdi)));
         _istemci.KullaniciListesiGeldi += (_, liste) => ArayuzdeCalistir(() => KullanicilariGoster(liste));
         _istemci.BaglantiKesildi += (_, sebep) => ArayuzdeCalistir(() => BaglantiKesildi(sebep));
 
@@ -38,7 +38,7 @@ public partial class AnaForm : Form
         {
             // Hata uygulamayı kapatmaz: kullanıcıya gösterilir, tekrar denenebilir.
             DurumYaz("Bağlanılamadı", hata: true);
-            MesajEkle($"[{DateTime.Now:HH:mm:ss}] ! {ex.Message.Replace('\n', ' ')}");
+            MesajEkle(EkranSatiri.HataSatiri(ex.Message));
             MessageBox.Show(ex.Message, "Bağlantı hatası", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             btnBaglan.Enabled = true;
             return;
@@ -109,16 +109,41 @@ public partial class AnaForm : Form
 
     private void BaglantiKesildi(string sebep)
     {
-        MesajEkle($"[{DateTime.Now:HH:mm:ss}] ! {sebep}");
+        MesajEkle(EkranSatiri.HataSatiri(sebep));
         DurumYaz(sebep, hata: sebep != "Bağlantı kesildi.");
         lstKullanicilar.Items.Clear();
         BaglantiAlanlariniAyarla(bagli: false);
     }
 
-    private void MesajEkle(string satir)
+    private void MesajEkle(EkranSatiri satir)
     {
         lstMesajlar.Items.Add(satir);
         lstMesajlar.TopIndex = lstMesajlar.Items.Count - 1;
+    }
+
+    /// <summary>
+    /// ListBox "OwnerDrawFixed" olduğu için her satırı biz çiziyoruz: satır türüne göre renk seçilir.
+    /// </summary>
+    private void lstMesajlar_DrawItem(object? sender, DrawItemEventArgs e)
+    {
+        e.DrawBackground();
+        if (e.Index < 0 || lstMesajlar.Items[e.Index] is not EkranSatiri satir)
+            return;
+
+        Color renk = satir.Tur switch
+        {
+            SatirTuru.Kendi => Color.FromArgb(29, 78, 216),   // mavi
+            SatirTuru.Ozel => Color.FromArgb(147, 51, 234),   // mor
+            SatirTuru.Sistem => Color.Gray,
+            SatirTuru.Hata => Color.Firebrick,
+            _ => SystemColors.WindowText
+        };
+        if ((e.State & DrawItemState.Selected) != 0)
+            renk = SystemColors.HighlightText;
+
+        var yaziTipi = satir.Tur is SatirTuru.Sistem ? new Font(e.Font!, FontStyle.Italic) : e.Font!;
+        TextRenderer.DrawText(e.Graphics, satir.Metin, yaziTipi, e.Bounds, renk, TextFormatFlags.Left | TextFormatFlags.VerticalCenter);
+        if (yaziTipi != e.Font) yaziTipi.Dispose();
     }
 
     private void KullanicilariGoster(IReadOnlyList<string> kullanicilar)

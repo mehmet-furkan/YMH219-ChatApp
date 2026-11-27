@@ -158,6 +158,9 @@ partial class AnaForm
         // lstMesajlar
         //
         lstMesajlar.Dock = DockStyle.Fill;
+        lstMesajlar.DrawMode = DrawMode.OwnerDrawFixed;
+        lstMesajlar.ItemHeight = 18;
+        lstMesajlar.DrawItem += lstMesajlar_DrawItem;
         lstMesajlar.HorizontalScrollbar = true;
         lstMesajlar.IntegralHeight = false;
         lstMesajlar.Name = "lstMesajlar";
