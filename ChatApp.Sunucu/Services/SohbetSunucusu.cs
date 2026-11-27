@@ -19,6 +19,10 @@ public class SohbetSunucusu
     private readonly object _kilit = new();
     private TcpListener? _dinleyici;
     private CancellationTokenSource? _iptal;
+    private readonly MesajGecmisi? _gecmis;
+
+    /// <param name="gecmis">Verilirse oda ve özel mesajlar bu dosyaya da kaydedilir.</param>
+    public SohbetSunucusu(MesajGecmisi? gecmis = null) => _gecmis = gecmis;
 
     public bool Calisiyor => _dinleyici is not null;
     public int Port { get; private set; }
@@ -49,6 +53,8 @@ public class SohbetSunucusu
         _iptal = new CancellationTokenSource();
         Port = port;
         GunlugeYaz($"Sunucu başlatıldı, port {port} dinleniyor.");
+        if (_gecmis is not null)
+            GunlugeYaz($"Mesaj geçmişi kaydediliyor: {_gecmis.BugununDosyasi}");
 
         _ = BaglantilariKabulEtAsync(dinleyici, _iptal.Token);
     }
@@ -218,6 +224,7 @@ public class SohbetSunucusu
 
         var mesaj = Mesaj.Ozel(gonderen.KullaniciAdi, alici.KullaniciAdi, gelen.Metin.Trim());
         GunlugeYaz(mesaj.ToString());
+        GecmiseKaydet(mesaj);
         await GuvenliGonderAsync(alici, mesaj);
         if (alici != gonderen)
             await GuvenliGonderAsync(gonderen, mesaj);
@@ -226,6 +233,9 @@ public class SohbetSunucusu
     /// <summary>Mesajı bağlı tüm istemcilere gönderir. Gönderilemeyen istemci kendi döngüsünde temizlenir.</summary>
     private async Task YayinlaAsync(Mesaj mesaj)
     {
+        if (mesaj.Tur != MesajTuru.KullaniciListesi)
+            GecmiseKaydet(mesaj);
+
         foreach (var istemci in Istemciler)
             await GuvenliGonderAsync(istemci, mesaj);
     }
@@ -244,6 +254,12 @@ public class SohbetSunucusu
         {
             return false;
         }
+    }
+
+    private void GecmiseKaydet(Mesaj mesaj)
+    {
+        if (_gecmis is not null && !_gecmis.Kaydet(mesaj))
+            GunlugeYaz("HATA: Mesaj geçmişi yazılamadı: " + _gecmis.SonHata);
     }
 
     private void GunlugeYaz(string metin) => Gunluk?.Invoke(this, metin);

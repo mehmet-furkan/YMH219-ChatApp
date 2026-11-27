@@ -10,7 +10,7 @@ namespace ChatApp.Sunucu;
 /// </summary>
 public partial class AnaForm : Form
 {
-    private readonly SohbetSunucusu _sunucu = new();
+    private readonly SohbetSunucusu _sunucu = new(new MesajGecmisi());
 
     public AnaForm()
     {
