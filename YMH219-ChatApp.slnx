@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="ChatApp.Istemci/ChatApp.Istemci.csproj" />
+  <Project Path="ChatApp.Ortak/ChatApp.Ortak.csproj" />
+  <Project Path="ChatApp.Sunucu/ChatApp.Sunucu.csproj" />
+</Solution>
