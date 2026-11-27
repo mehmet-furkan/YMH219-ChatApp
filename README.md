@@ -12,13 +12,17 @@ Tüm ağ işlemleri `async/await` ile yapılır, bu yüzden arayüz hiç donmaz.
 
 ![Sunucu](docs/sunucu.png)
 
-**İstemci:** zaman bilgili mesajlar, özel mesaj (`/w`) ve çevrimiçi kullanıcılar.
+**İstemci:** zaman bilgili, türüne göre renkli mesajlar (kendi mesajın mavi, özel mesaj mor, sistem gri), özel mesaj (`/w`) ve çevrimiçi kullanıcılar.
 
 ![İstemci](docs/istemci-mehmet.png)
 
 | Diğer istemci (özel mesajı alan) | Sunucu kapalıyken bağlanma denemesi |
 |---|---|
 | ![İstemci ayse](docs/istemci-ayse.png) | ![Bağlantı hatası](docs/baglanti-hatasi.png) |
+
+**Sunucu tarafından bağlantısı kesilen istemci:**
+
+![Atılan istemci](docs/istemci-atildi.png)
 
 ## Kullanılan Teknolojiler
 
@@ -59,6 +63,7 @@ dotnet build
 - Sunucu günlüğü: bağlanan/ayrılan istemciler, reddedilen girişler, tüm mesajlar
 - "Yerel ağa açık" seçeneği (kapalıyken sadece `127.0.0.1`) ve durum çubuğunda bu bilgisayarın IP adresleri
 - Aynı kullanıcı adıyla ikinci girişi reddeder
+- Listeden seçilen istemcinin bağlantısını kesebilir (**Seçili istemcinin bağlantısını kes**)
 - **Mesaj geçmişi** `%AppData%\YMH219-ChatApp\gecmis\sohbet-YYYY-AA-GG.txt` dosyasına kaydedilir
 
 **İstemci**
@@ -67,6 +72,8 @@ dotnet build
 - Birden fazla istemci aynı odada (yayın); katılma/ayrılma bildirimleri
 - **Özel mesaj:** `/w kullanici mesaj` (çevrimiçi listesinde bir kişiye çift tıklayınca komut hazırlanır)
 - Çevrimiçi kullanıcı listesi
+- Mesajlar türüne göre **renkli**: kendi mesajın mavi, özel mesaj mor, sistem bildirimi gri-italik, hata kırmızı (`ListBox` `OwnerDrawFixed`)
+- Son başarılı bağlantının sunucu, port ve kullanıcı adı `%AppData%\YMH219-ChatApp\istemci-ayarlari.json` dosyasında hatırlanır
 - **Bağlantı hataları uygulamayı kapatmaz:** sunucu yoksa / yanıt vermezse / kullanıcı adı alınmışsa uyarı penceresi; sohbet sırasında sunucu kapanırsa mesaj listesine ve durum çubuğuna yazılır, tekrar bağlanılabilir
 
 ## Nasıl Çalışır?
@@ -85,6 +92,9 @@ ChatApp.Sunucu/
   AnaForm.cs                       → sadece arayüz: olaylara abone olur, listeyi ve günlüğü günceller
 ChatApp.Istemci/
   Services/SohbetIstemcisi.cs      → TcpClient ile bağlanma, giriş, gönderme, arka planda dinleme
+  Models/EkranSatiri.cs            → mesaj listesindeki satır + türü (Kendi, Diger, Ozel, Sistem, Hata)
+  Models/IstemciAyarlari.cs        → hatırlanan sunucu, port, kullanıcı adı
+  Services/AyarDeposu.cs           → ayarları JSON dosyasına yazar/okur
   Services/BaglantiHatasiException.cs → kullanıcıya gösterilecek bağlantı hatası
   AnaForm.cs                       → sadece arayüz
 ```
