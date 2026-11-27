@@ -24,7 +24,7 @@ public partial class AnaForm : Form
     private void AnaForm_Load(object? sender, EventArgs e)
     {
         var adresler = AgBilgisi.YerelIPv4Adresleri();
-        lblYerelIp.Text = "Bu bilgisayarın IP adresleri: " + (adresler.Count > 0 ? string.Join(", ", adresler) : "bulunamadı");
+        lblYerelIp.Text = "Bu bilgisayarın IP'si: " + (adresler.Count > 0 ? string.Join(", ", adresler) : "bulunamadı");
     }
 
     // ---------- Butonlar ----------
@@ -34,7 +34,7 @@ public partial class AnaForm : Form
         int port = (int)nudPort.Value;
         try
         {
-            _sunucu.Baslat(port);
+            _sunucu.Baslat(port, chkYerelAg.Checked);
         }
         catch (SocketException ex)
         {
@@ -105,7 +105,7 @@ public partial class AnaForm : Form
         bool calisiyor = _sunucu.Calisiyor;
         btnBaslat.Enabled = !calisiyor;
         btnDurdur.Enabled = calisiyor;
-        nudPort.Enabled = !calisiyor;
+        nudPort.Enabled = chkYerelAg.Enabled = !calisiyor;
         lblDurum.Text = calisiyor ? $"Sunucu çalışıyor — port {_sunucu.Port}" : "Sunucu kapalı";
         lblDurum.ForeColor = calisiyor ? Color.SeaGreen : SystemColors.ControlText;
         lblIstemciSayisi.Text = $"Bağlı istemci: {lvIstemciler.Items.Count}";

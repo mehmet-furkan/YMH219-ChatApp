@@ -41,18 +41,22 @@ public class SohbetSunucusu
     /// <summary>
     /// Verilen portu dinlemeye başlar. Port kullanımdaysa SocketException fırlatır (form yakalayıp gösterir).
     /// </summary>
-    public void Baslat(int port)
+    /// <param name="yerelAgaAcik">
+    /// true: tüm ağ arayüzleri dinlenir, yerel ağdaki bilgisayarlar bağlanabilir (Windows Güvenlik Duvarı izin isteyebilir).
+    /// false: sadece 127.0.0.1 dinlenir, yalnızca aynı bilgisayardaki istemciler bağlanabilir.
+    /// </param>
+    public void Baslat(int port, bool yerelAgaAcik = true)
     {
         if (Calisiyor)
             throw new InvalidOperationException("Sunucu zaten çalışıyor.");
 
-        var dinleyici = new TcpListener(IPAddress.Any, port);
+        var dinleyici = new TcpListener(yerelAgaAcik ? IPAddress.Any : IPAddress.Loopback, port);
         dinleyici.Start();
 
         _dinleyici = dinleyici;
         _iptal = new CancellationTokenSource();
         Port = port;
-        GunlugeYaz($"Sunucu başlatıldı, port {port} dinleniyor.");
+        GunlugeYaz($"Sunucu başlatıldı, port {port} dinleniyor ({(yerelAgaAcik ? "yerel ağa açık" : "sadece bu bilgisayar")}).");
         if (_gecmis is not null)
             GunlugeYaz($"Mesaj geçmişi kaydediliyor: {_gecmis.BugununDosyasi}");
 

@@ -22,7 +22,7 @@ partial class AnaForm
         nudPort = new NumericUpDown();
         btnBaslat = new Button();
         btnDurdur = new Button();
-        lblYerelIp = new Label();
+        chkYerelAg = new CheckBox();
         grpIstemciler = new GroupBox();
         lvIstemciler = new ListView();
         colKullanici = new ColumnHeader();
@@ -33,6 +33,7 @@ partial class AnaForm
         durumCubugu = new StatusStrip();
         lblDurum = new ToolStripStatusLabel();
         lblIstemciSayisi = new ToolStripStatusLabel();
+        lblYerelIp = new ToolStripStatusLabel();
         pnlUst.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)nudPort).BeginInit();
         grpIstemciler.SuspendLayout();
@@ -46,7 +47,7 @@ partial class AnaForm
         pnlUst.Controls.Add(nudPort);
         pnlUst.Controls.Add(btnBaslat);
         pnlUst.Controls.Add(btnDurdur);
-        pnlUst.Controls.Add(lblYerelIp);
+        pnlUst.Controls.Add(chkYerelAg);
         pnlUst.Dock = DockStyle.Top;
         pnlUst.Name = "pnlUst";
         pnlUst.Padding = new Padding(8);
@@ -91,13 +92,16 @@ partial class AnaForm
         btnDurdur.UseVisualStyleBackColor = true;
         btnDurdur.Click += btnDurdur_Click;
         //
-        // lblYerelIp
+        // chkYerelAg
         //
-        lblYerelIp.AutoSize = true;
-        lblYerelIp.ForeColor = SystemColors.GrayText;
-        lblYerelIp.Location = new Point(350, 16);
-        lblYerelIp.Name = "lblYerelIp";
-        lblYerelIp.Text = "Bu bilgisayarın IP adresleri: -";
+        chkYerelAg.AutoSize = true;
+        chkYerelAg.Checked = true;
+        chkYerelAg.CheckState = CheckState.Checked;
+        chkYerelAg.Location = new Point(348, 15);
+        chkYerelAg.Name = "chkYerelAg";
+        chkYerelAg.TabIndex = 4;
+        chkYerelAg.Text = "Yerel ağa açık (diğer bilgisayarlar bağlanabilir)";
+        chkYerelAg.UseVisualStyleBackColor = true;
         //
         // grpIstemciler
         //
@@ -156,7 +160,7 @@ partial class AnaForm
         //
         // durumCubugu
         //
-        durumCubugu.Items.AddRange(new ToolStripItem[] { lblDurum, lblIstemciSayisi });
+        durumCubugu.Items.AddRange(new ToolStripItem[] { lblDurum, lblYerelIp, lblIstemciSayisi });
         durumCubugu.Name = "durumCubugu";
         durumCubugu.TabIndex = 3;
         //
@@ -171,6 +175,12 @@ partial class AnaForm
         //
         lblIstemciSayisi.Name = "lblIstemciSayisi";
         lblIstemciSayisi.Text = "Bağlı istemci: 0";
+        //
+        // lblYerelIp
+        //
+        lblYerelIp.ForeColor = SystemColors.GrayText;
+        lblYerelIp.Name = "lblYerelIp";
+        lblYerelIp.Text = "IP: -";
         //
         // AnaForm
         //
@@ -205,7 +215,7 @@ partial class AnaForm
     private NumericUpDown nudPort;
     private Button btnBaslat;
     private Button btnDurdur;
-    private Label lblYerelIp;
+    private CheckBox chkYerelAg;
     private GroupBox grpIstemciler;
     private ListView lvIstemciler;
     private ColumnHeader colKullanici;
@@ -216,4 +226,5 @@ partial class AnaForm
     private StatusStrip durumCubugu;
     private ToolStripStatusLabel lblDurum;
     private ToolStripStatusLabel lblIstemciSayisi;
+    private ToolStripStatusLabel lblYerelIp;
 }
