@@ -10,6 +10,7 @@ namespace ChatApp.Istemci;
 public partial class AnaForm : Form
 {
     private readonly SohbetIstemcisi _istemci = new();
+    private readonly AyarDeposu _ayarDeposu = new();
 
     public AnaForm()
     {
@@ -19,7 +20,11 @@ public partial class AnaForm : Form
         _istemci.KullaniciListesiGeldi += (_, liste) => ArayuzdeCalistir(() => KullanicilariGoster(liste));
         _istemci.BaglantiKesildi += (_, sebep) => ArayuzdeCalistir(() => BaglantiKesildi(sebep));
 
-        txtKullaniciAdi.Text = "kullanici" + Random.Shared.Next(10, 100);
+        // Son başarılı bağlantının bilgileriyle alanları doldur; ilk açılışta rastgele bir ad öner.
+        var ayarlar = _ayarDeposu.Oku();
+        txtSunucu.Text = ayarlar.Sunucu;
+        nudPort.Value = Math.Clamp(ayarlar.Port, (int)nudPort.Minimum, (int)nudPort.Maximum);
+        txtKullaniciAdi.Text = ayarlar.KullaniciAdi.Length > 0 ? ayarlar.KullaniciAdi : "kullanici" + Random.Shared.Next(10, 100);
     }
 
     // ---------- Butonlar ----------
@@ -45,6 +50,12 @@ public partial class AnaForm : Form
         }
 
         DurumYaz($"Bağlı: {_istemci.KullaniciAdi} @ {txtSunucu.Text}:{nudPort.Value}", hata: false);
+        _ayarDeposu.Kaydet(new IstemciAyarlari
+        {
+            Sunucu = txtSunucu.Text.Trim(),
+            Port = (int)nudPort.Value,
+            KullaniciAdi = _istemci.KullaniciAdi
+        });
         BaglantiAlanlariniAyarla(bagli: true);
         txtMesaj.Focus();
     }
